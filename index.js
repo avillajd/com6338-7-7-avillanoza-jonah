@@ -51,3 +51,56 @@ var questionsArr = [
         ]
       },
   ]
+
+  
+
+  //Start Button Add
+  var quiz = document.getElementById("quiz")
+  var text = document.createElement("p")
+  var startBtn = document.createElement('button')
+  startBtn.setAttribute('id', 'start-quiz')
+  var startLabel = document.createTextNode('Start Quiz!')
+  startBtn.appendChild(startLabel)
+  quiz.appendChild(startBtn)
+
+//Quiz button
+  startBtn.onclick = function(){
+    //Remove start button 
+    var removeBtn = document.getElementById('start-quiz')
+    removeBtn.remove();
+    
+    //Show Questions
+    quiz.innerHTML = ""
+    for (var i =0; i < questionsArr.length; i++){
+        text.textContent=questionsArr[i].question
+        answer = questionsArr[i].answer
+        quiz.appendChild(text)
+        
+    }
+    
+    //Timer
+    var timerPare = document.createElement('p')
+    var timerParaTxt = document.createTextNode('30')
+    timerPare.appendChild(timerParaTxt)
+    timerPare.setAttribute('id', 'timer')
+    quiz.appendChild(timerPare)
+    startTimer
+      
+
+var startTimer = setInterval(function() {
+  var timerEl = document.getElementById('timer')
+
+  var seconds = Number(timerEl.textContent) - 1
+  if (seconds === -1) {
+   
+    clearInterval(startTimer)
+  } else {
+         
+    timerEl.textContent = seconds
+  }
+
+}, 1000)
+}
+
+  
+
