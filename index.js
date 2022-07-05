@@ -52,55 +52,107 @@ var questionsArr = [
       },
   ]
 
-  
+  var quizContainer = document.getElementById('quiz')
+  var score = 0 
+  var currentQuestion = 0 
+  var timeRemaining
+  var timerId
 
-  //Start Button Add
-  var quiz = document.getElementById("quiz")
-  var text = document.createElement("p")
-  var startBtn = document.createElement('button')
-  startBtn.setAttribute('id', 'start-quiz')
-  var startLabel = document.createTextNode('Start Quiz!')
-  startBtn.appendChild(startLabel)
-  quiz.appendChild(startBtn)
+  quizContainer.onclick = function (e){
+    if (e.target.id === 'start-quiz'){
+      drawQuestion()
+    } else if (e.target.parentElement.id === 'choices'
+    && e.target.tagName === 'BUTTON') {
+      if ( e.target.textContent === questionsArr[currentQuestion].answer){
+        score++
+      }
+      clearInterval(timerId)
+      currentQuestion++
 
-//Quiz button
-  startBtn.onclick = function(){
-    //Remove start button 
-    var removeBtn = document.getElementById('start-quiz')
-    removeBtn.remove();
-    
-    //Show Questions
-    quiz.innerHTML = ""
-    for (var i =0; i < questionsArr.length; i++){
-        text.textContent=questionsArr[i].question
-        answer = questionsArr[i].answer
-        quiz.appendChild(text)
-        
+      if(currentQuestion< questionsArr.length){
+        drawQuestion()
+      } else {
+        endGame()
+      }
     }
-    
-    //Timer
-    var timerPare = document.createElement('p')
-    var timerParaTxt = document.createTextNode('30')
-    timerPare.appendChild(timerParaTxt)
-    timerPare.setAttribute('id', 'timer')
-    quiz.appendChild(timerPare)
-    startTimer
-      
-
-var startTimer = setInterval(function() {
-  var timerEl = document.getElementById('timer')
-
-  var seconds = Number(timerEl.textContent) - 1
-  if (seconds === -1) {
-   
-    clearInterval(startTimer)
-  } else {
-         
-    timerEl.textContent = seconds
   }
 
-}, 1000)
-}
+  function drawGameStart() {
+    score = 0 
+    currentQuestion = 0 
+    quizContainer.innerHTML = ""
+    var previousScore  = localStorage.getItem('previous-Score')
 
-  
+    if (previousScore) {
+      var previousScoreEl = document.createElement('p')
+      previousScoreEl.textContent = 'Previous Score: ' + previousScore
+      quizContainer.appendChild(previousScoreEl)
+    }
 
+    var startBtn = document.createElement('button')
+    startBtn.id = 'start-quiz'
+    startBtn.textContent = "Start Quiz!"
+    quizContainer.appendChild(startBtn)
+
+  }
+// Buttons for choices and displaying questions
+  function drawQuestion(){
+    var questionObj = questionsArr[currentQuestion]
+    quizContainer.innerHTML= ""
+
+    var questionTextEl = document.createElement('p')
+    questionTextEl.textContent = questionObj.question
+    quizContainer.appendChild(questionTextEl)
+
+    var choicesContainer = document.createElement('div')
+    choicesContainer.id = 'choices'
+    quizContainer.appendChild(choicesContainer)
+
+    questionObj.options.forEach(function(choice){
+      var btn = document.createElement('button')
+      btn.textContent = choice
+      choicesContainer.appendChild(btn)
+
+    })
+
+    //Timer Display and adding elements
+    timeRemaining = 30
+    var timerEl = document.createElement('p')
+    timerEl.id = 'timer'
+    timerEl.textContent = timeRemaining
+    quizContainer.appendChild(timerEl)
+
+    startTimer()
+
+  }
+
+  function startTimer(){
+    var timerEl = document.getElementById('timer')
+    
+    timerId = setInterval(function(){
+      timeRemaining--
+      if(timeRemaining >= 0){
+        timerEl.textContent = timeRemaining
+      } else { 
+        clearInterval(timerId)
+
+        currentQuestion ++
+
+        if (currentQuestion < questionsArr.length){
+          drawQuestion()
+        } else {
+          endGame()
+        }
+      }
+    }, 1000)
+  }
+
+  function endGame(){
+    quizContainer.innerHTML = ""
+    
+    var percentage = Math.round(score / questionsArr.length * 100) + "%"
+    localStorage.setItem('previous-score', percentage)
+    drawGameStart()
+  }
+
+  drawGameStart()
