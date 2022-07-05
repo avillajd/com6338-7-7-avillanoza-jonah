@@ -81,7 +81,7 @@ var questionsArr = [
     score = 0 
     currentQuestion = 0 
     quizContainer.innerHTML = ""
-    var previousScore  = localStorage.getItem('previous-Score')
+    var previousScore  = localStorage.getItem('previous-score')
 
     if (previousScore) {
       var previousScoreEl = document.createElement('p')
